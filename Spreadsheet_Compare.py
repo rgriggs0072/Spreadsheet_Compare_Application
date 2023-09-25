@@ -11,8 +11,36 @@ from openpyxl import load_workbook
 # Function to compare Excel sheets and create a new workbook
 def compare_and_create_workbook(file1, file2):
     # Read the uploaded files into dataframes
-    df1 = pd.read_excel(file1, sheet_name="Sheet1")
-    df2 = pd.read_excel(file2, sheet_name="Sheet1")
+    from openpyxl import load_workbook
+
+    # Read the uploaded file into a pandas DataFrame
+    df1 = pd.read_excel(file1)
+
+    # Load the Excel file with openpyxl
+    workbook1 = load_workbook(file1)
+
+    # Get the names of all sheets in the workbook
+    sheet_names1 = workbook1.sheetnames
+
+    # Assuming there's only one sheet, you can access its name like this
+    sheet_name1 = sheet_names1[0]
+
+    # Read the uploaded file into a pandas DataFrame
+    df2 = pd.read_excel(file2)
+
+    # Load the Excel file with openpyxl
+    workbook2 = load_workbook(file2)
+
+    # Get the names of all sheets in the workbook
+    sheet_names2 = workbook2.sheetnames
+
+    # Assuming there's only one sheet, you can access its name like this
+    sheet_name2 = sheet_names2[0]
+
+
+    
+    #df1 = pd.read_excel(file1, sheet_name="Sheet1")
+    #df2 = pd.read_excel(file2, sheet_name="Sheet1")
 
     # Determine the column order based on the dataframes
     column_order = list(df1.columns)  # Use the columns from Sheet1 as the order
