@@ -166,6 +166,6 @@ if st.button("Compare and Create Workbook"):
 
         # Specify the file type as 'xlsx' in the download button
         with open(compared_file_path, 'rb') as f:
-            st.download_button(label="Download Compared Excel Workbook", data=f.read(), key='compared_excel', file_name="compared_excel_with_sheets.xlsx")
+            st.download_button(label="Download Compared Excel Workbook", data=f.read(), key='compared_excel', file_name="compared_results.xlsx")
     else:
         st.warning("Please upload both Excel files for comparison.")
