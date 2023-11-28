@@ -3,15 +3,11 @@ import streamlit as st
 import pandas as pd
 from openpyxl import Workbook
 from openpyxl import load_workbook
-
-
-# Written by Randy Griggs 09/24/2023 ---------------------------------------------------------------
-
+from io import BytesIO
 
 # Function to compare Excel sheets and create a new workbook
 def compare_and_create_workbook(file1, file2):
-    # Read the uploaded files into dataframes
-    from openpyxl import load_workbook
+    
 
     # Read the uploaded file into a pandas DataFrame
     df1 = pd.read_excel(file1)
@@ -36,11 +32,6 @@ def compare_and_create_workbook(file1, file2):
 
     # Assuming there's only one sheet, you can access its name like this
     sheet_name2 = sheet_names2[0]
-
-
-    
-    #df1 = pd.read_excel(file1, sheet_name="Sheet1")
-    #df2 = pd.read_excel(file2, sheet_name="Sheet1")
 
     # Determine the column order based on the dataframes
     column_order = list(df1.columns)  # Use the columns from Sheet1 as the order
@@ -142,14 +133,17 @@ def compare_and_create_workbook(file1, file2):
             if r_idx == 0:
                 ws.append(column_order)  # Write the column names in the correct order
             ws.append(values)
+            
+    # Save the Excel workbook to a BytesIO buffer
+    buffer = BytesIO()
+    compared_wb.save(buffer)
+    
+    compared_wb.close()
 
-    # Save the Excel workbook to a temporary file
-    compared_file_path = "compared_excel_with_sheets.xlsx"
-    compared_wb.save(compared_file_path)
+    return buffer
+  
 
-    return compared_file_path
-
-# Streamlit app
+ # Streamlit app
 st.title("Excel Sheet Comparison Application")
 
 # Upload the first spreadsheet
@@ -161,11 +155,15 @@ uploaded_file2 = st.file_uploader("Upload Excel File 2 (Sheet1)", type=["xlsx"])
 # Compare Excel sheets and create a workbook with separate sheets
 if st.button("Compare and Create Workbook"):
     if uploaded_file1 and uploaded_file2:
-        compared_file_path = compare_and_create_workbook(uploaded_file1, uploaded_file2)
+        compared_buffer = compare_and_create_workbook(uploaded_file1, uploaded_file2)
         st.success("Comparison completed. Download the compared Excel workbook below:")
 
         # Specify the file type as 'xlsx' in the download button
-        with open(compared_file_path, 'rb') as f:
-            st.download_button(label="Download Compared Excel Workbook", data=f.read(), key='compared_excel', file_name="compared_results.xlsx")
+        st.download_button(
+            label="Download Compared Excel Workbook",
+            data=compared_buffer.getvalue(),
+            key='compared_excel',
+            file_name="compared_results.xlsx"
+        )
     else:
         st.warning("Please upload both Excel files for comparison.")
